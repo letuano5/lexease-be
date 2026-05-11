@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lexease.auth.AuthProperties;
 import com.lexease.auth.JwtService;
 import com.lexease.shared.api.ApiError;
+import com.lexease.shared.api.ErrorCode;
 import com.lexease.users.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -64,7 +65,7 @@ public class SecurityConfig {
                 objectMapper,
                 response,
                 HttpServletResponse.SC_UNAUTHORIZED,
-                ApiError.of("UNAUTHORIZED", "Authentication is required"));
+                ApiError.of(ErrorCode.UNAUTHORIZED, "Authentication is required"));
     }
 
     @Bean
@@ -73,7 +74,7 @@ public class SecurityConfig {
                 objectMapper,
                 response,
                 HttpServletResponse.SC_FORBIDDEN,
-                ApiError.of("FORBIDDEN", "Access denied"));
+                ApiError.of(ErrorCode.FORBIDDEN, "Access denied"));
     }
 
     private static void writeError(

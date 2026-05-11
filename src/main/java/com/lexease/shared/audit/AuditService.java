@@ -16,12 +16,12 @@ public class AuditService {
         this.clock = clock;
     }
 
-    public void log(UUID actorUserId, String action, String targetType, UUID targetId) {
+    public void log(UUID actorUserId, AuditAction action, AuditTargetType targetType, UUID targetId) {
         auditLogRepository.save(new AuditLog(
                 UUID.randomUUID(),
                 actorUserId,
-                action,
-                targetType,
+                action.name(),
+                targetType.name(),
                 targetId,
                 Map.of(),
                 Instant.now(clock)));

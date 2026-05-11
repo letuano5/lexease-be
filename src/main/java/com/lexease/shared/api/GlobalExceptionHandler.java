@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
                 .map(error -> new FieldViolation(error.getField(), error.getDefaultMessage()))
                 .toList();
         return ResponseEntity.badRequest()
-                .body(new ApiError("VALIDATION_ERROR", "Invalid request", details));
+                .body(ApiError.of(ErrorCode.VALIDATION_ERROR, "Invalid request", details));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -32,18 +32,18 @@ public class GlobalExceptionHandler {
                 .map(violation -> new FieldViolation(violation.getPropertyPath().toString(), violation.getMessage()))
                 .toList();
         return ResponseEntity.badRequest()
-                .body(new ApiError("VALIDATION_ERROR", "Invalid request", details));
+                .body(ApiError.of(ErrorCode.VALIDATION_ERROR, "Invalid request", details));
     }
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     ResponseEntity<ApiError> handleAuthenticationMissing(AuthenticationCredentialsNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiError.of("UNAUTHORIZED", "Authentication is required"));
+                .body(ApiError.of(ErrorCode.UNAUTHORIZED, "Authentication is required"));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiError.of("FORBIDDEN", "Access denied"));
+                .body(ApiError.of(ErrorCode.FORBIDDEN, "Access denied"));
     }
 }

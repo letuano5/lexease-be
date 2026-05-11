@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class UserPrincipal implements UserDetails {
+    private static final String ROLE_AUTHORITY_PREFIX = "ROLE_";
     private final UUID id;
     private final String email;
     private final UserRole role;
@@ -22,7 +23,7 @@ public class UserPrincipal implements UserDetails {
         this.email = user.getEmail();
         this.role = user.getRole();
         this.status = user.getStatus();
-        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        this.authorities = List.of(new SimpleGrantedAuthority(ROLE_AUTHORITY_PREFIX + user.getRole().name()));
     }
 
     public UUID id() {

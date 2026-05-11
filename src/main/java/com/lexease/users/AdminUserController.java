@@ -1,6 +1,7 @@
 package com.lexease.users;
 
 import com.lexease.shared.api.ApiException;
+import com.lexease.shared.api.ErrorCode;
 import com.lexease.shared.api.PageResponse;
 import jakarta.validation.Valid;
 import java.time.Clock;
@@ -40,7 +41,7 @@ public class AdminUserController {
     @PatchMapping("/{id}/status")
     UserResponse updateStatus(@PathVariable UUID id, @Valid @RequestBody PatchUserStatusRequest request) {
         UserAccount user = userRepository.findById(id)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND, "User not found"));
         user.updateStatus(request.status(), Instant.now(clock));
         return UserResponse.from(userRepository.save(user));
     }

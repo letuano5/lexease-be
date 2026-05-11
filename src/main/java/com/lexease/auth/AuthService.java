@@ -1,7 +1,10 @@
 package com.lexease.auth;
 
 import com.lexease.shared.api.ApiException;
+import com.lexease.shared.api.ErrorCode;
+import com.lexease.shared.audit.AuditAction;
 import com.lexease.shared.audit.AuditService;
+import com.lexease.shared.audit.AuditTargetType;
 import com.lexease.users.UserAccount;
 import com.lexease.users.UserRepository;
 import com.lexease.users.UserResponse;
@@ -44,12 +47,12 @@ public class AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (request.role() == UserRole.ADMIN) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "ADMIN_REGISTER_DISABLED", "Admin cannot register publicly");
+            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.ADMIN_REGISTER_DISABLED, "Admin cannot register publicly");
         }
 
         String email = normalizeEmail(request.email());
         if (userRepository.existsByEmail(email)) {
-            throw new ApiException(HttpStatus.CONFLICT, "EMAIL_ALREADY_REGISTERED", "Email already registered");
+            throw new ApiException(HttpStatus.CONFLICT, ErrorCode.EMAIL_ALREADY_REGISTERED, "Email already registered");
         }
 
         Instant now = Instant.now(clock);
@@ -63,7 +66,7 @@ public class AuthService {
                 now,
                 now);
         user = userRepository.save(user);
-        auditService.log(user.getId(), "USER_REGISTERED", "USER", user.getId());
+        auditService.log(user.getId(), AuditAction.USER_REGISTERED, AuditTargetType.USER, user.getId());
         return authResponse(user, refreshTokenService.create(user, null).rawToken());
     }
 
@@ -74,7 +77,7 @@ public class AuthService {
         if (user.getStatus() != UserStatus.ACTIVE || !passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             throw invalidCredentials();
         }
-        auditService.log(user.getId(), "USER_LOGIN", "USER", user.getId());
+        auditService.log(user.getId(), AuditAction.USER_LOGIN, AuditTargetType.USER, user.getId());
         return authResponse(user, refreshTokenService.create(user, request.deviceId()).rawToken());
     }
 
@@ -83,10 +86,10 @@ public class AuthService {
         RefreshToken oldToken = refreshTokenService.consumeForRotation(request.refreshToken());
         UserAccount user = oldToken.getUser();
         if (user.getStatus() != UserStatus.ACTIVE) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "USER_DISABLED", "User is disabled");
+            throw new ApiException(HttpStatus.UNAUTHORIZED, ErrorCode.USER_DISABLED, "User is disabled");
         }
         String newRefreshToken = refreshTokenService.create(user, oldToken.getDeviceId()).rawToken();
-        auditService.log(user.getId(), "REFRESH_TOKEN_ROTATED", "USER", user.getId());
+        auditService.log(user.getId(), AuditAction.REFRESH_TOKEN_ROTATED, AuditTargetType.USER, user.getId());
         return authResponse(user, newRefreshToken);
     }
 
@@ -104,7 +107,7 @@ public class AuthService {
     }
 
     private ApiException invalidCredentials() {
-        return new ApiException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid email or password");
+        return new ApiException(HttpStatus.UNAUTHORIZED, ErrorCode.INVALID_CREDENTIALS, "Invalid email or password");
     }
 
     private String normalizeEmail(String email) {

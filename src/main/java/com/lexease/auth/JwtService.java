@@ -1,6 +1,7 @@
 package com.lexease.auth;
 
 import com.lexease.shared.api.ApiException;
+import com.lexease.shared.api.ErrorCode;
 import com.lexease.users.UserAccount;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
+    private static final String ROLE_CLAIM = "role";
     private final AuthProperties authProperties;
     private final Clock clock;
 
@@ -35,7 +37,7 @@ public class JwtService {
             JWTClaimsSet claims = new JWTClaimsSet.Builder()
                     .issuer(authProperties.jwt().issuer())
                     .subject(user.getId().toString())
-                    .claim("role", user.getRole().name())
+                    .claim(ROLE_CLAIM, user.getRole().name())
                     .jwtID(UUID.randomUUID().toString())
                     .issueTime(Date.from(now))
                     .expirationTime(Date.from(expiresAt))
@@ -63,9 +65,9 @@ public class JwtService {
             }
             Date expiration = claims.getExpirationTime();
             if (expiration == null || !expiration.toInstant().isAfter(Instant.now(clock))) {
-                throw new ApiException(HttpStatus.UNAUTHORIZED, "TOKEN_EXPIRED", "Access token expired");
+                throw new ApiException(HttpStatus.UNAUTHORIZED, ErrorCode.TOKEN_EXPIRED, "Access token expired");
             }
-            return new ParsedAccessToken(UUID.fromString(claims.getSubject()), claims.getStringClaim("role"));
+            return new ParsedAccessToken(UUID.fromString(claims.getSubject()), claims.getStringClaim(ROLE_CLAIM));
         } catch (ParseException | JOSEException | IllegalArgumentException ex) {
             throw invalidToken();
         }
@@ -84,7 +86,7 @@ public class JwtService {
     }
 
     private ApiException invalidToken() {
-        return new ApiException(HttpStatus.UNAUTHORIZED, "INVALID_ACCESS_TOKEN", "Invalid access token");
+        return new ApiException(HttpStatus.UNAUTHORIZED, ErrorCode.INVALID_ACCESS_TOKEN, "Invalid access token");
     }
 
     public record ParsedAccessToken(UUID userId, String role) {
