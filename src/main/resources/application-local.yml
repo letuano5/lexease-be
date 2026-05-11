@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/lexease}
+    username: ${DB_USERNAME:lexease}
+    password: ${DB_PASSWORD:lexease}
+
+logging:
+  level:
+    com.lexease: DEBUG

@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: lexease-be
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/lexease}
+    username: ${DB_USERNAME:lexease}
+    password: ${DB_PASSWORD:lexease}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  threads:
+    virtual:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+lexease:
+  security:
+    jwt:
+      issuer: ${JWT_ISSUER:lexease}
+      access-secret: ${JWT_ACCESS_SECRET:dev-only-change-this-secret-at-least-32-bytes}
+      access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:15m}
+    refresh-token:
+      pepper: ${JWT_REFRESH_PEPPER:dev-only-refresh-pepper-change-me}
+      ttl: ${JWT_REFRESH_TOKEN_TTL:30d}
+  object-storage:
+    mode: ${OBJECT_STORAGE_MODE:local}
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
