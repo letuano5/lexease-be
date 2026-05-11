@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/guardian-child-links")
+@RequestMapping("/guardian-child-links")
 public class GuardianChildLinkController {
     private final GuardianChildLinkService guardianChildLinkService;
 
