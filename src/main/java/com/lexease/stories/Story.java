@@ -1,5 +1,7 @@
 package com.lexease.stories;
 
+import com.lexease.authors.Author;
+import com.lexease.genres.Genre;
 import com.lexease.users.UserAccount;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

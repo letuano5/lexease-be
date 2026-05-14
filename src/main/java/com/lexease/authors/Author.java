@@ -1,4 +1,4 @@
-package com.lexease.stories;
+package com.lexease.authors;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,8 +8,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "genres")
-public class Genre {
+@Table(name = "authors")
+public class Author {
     @Id
     private UUID id;
 
@@ -22,14 +22,21 @@ public class Genre {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    protected Genre() {
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
+    protected Author() {
     }
 
-    public Genre(UUID id, String name, String normalizedName, Instant createdAt) {
+    public Author(UUID id, String name, String normalizedName, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.name = name;
         this.normalizedName = normalizedName;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public UUID getId() {
@@ -42,5 +49,20 @@ public class Genre {
 
     public String getNormalizedName() {
         return normalizedName;
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    public void update(String name, String normalizedName, Instant updatedAt) {
+        this.name = name;
+        this.normalizedName = normalizedName;
+        this.updatedAt = updatedAt;
+    }
+
+    public void delete(Instant deletedAt) {
+        this.deletedAt = deletedAt;
+        this.updatedAt = deletedAt;
     }
 }

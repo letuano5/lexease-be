@@ -1,7 +1,9 @@
 package com.lexease.stories;
 
+import com.lexease.authors.Author;
 import com.lexease.guardians.GuardianChildLink;
 import com.lexease.guardians.GuardianChildLinkStatus;
+import com.lexease.genres.Genre;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;

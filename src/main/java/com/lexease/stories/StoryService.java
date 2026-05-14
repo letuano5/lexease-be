@@ -1,7 +1,11 @@
 package com.lexease.stories;
 
+import com.lexease.authors.Author;
+import com.lexease.authors.AuthorRepository;
 import com.lexease.guardians.GuardianChildLinkStatus;
 import com.lexease.guardians.PermissionService;
+import com.lexease.genres.Genre;
+import com.lexease.genres.GenreRepository;
 import com.lexease.shared.api.ApiException;
 import com.lexease.shared.api.ErrorCode;
 import com.lexease.shared.api.PageResponse;
@@ -252,7 +256,7 @@ public class StoryService {
 
     private List<Genre> loadGenres(List<UUID> genreIds) {
         List<UUID> ids = distinctIds(genreIds);
-        List<Genre> genres = genreRepository.findAllById(ids);
+        List<Genre> genres = genreRepository.findAllByIdInAndDeletedAtIsNull(ids);
         if (genres.size() != ids.size()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.GENRE_NOT_FOUND, "Genre not found");
         }
@@ -261,7 +265,7 @@ public class StoryService {
 
     private List<Author> loadAuthors(List<UUID> authorIds) {
         List<UUID> ids = distinctIds(authorIds);
-        List<Author> authors = authorRepository.findAllById(ids);
+        List<Author> authors = authorRepository.findAllByIdInAndDeletedAtIsNull(ids);
         if (authors.size() != ids.size()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.AUTHOR_NOT_FOUND, "Author not found");
         }

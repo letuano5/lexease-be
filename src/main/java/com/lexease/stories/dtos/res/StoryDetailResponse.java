@@ -1,5 +1,7 @@
 package com.lexease.stories.dtos.res;
 
+import com.lexease.authors.dtos.res.AuthorResponse;
+import com.lexease.genres.dtos.res.GenreResponse;
 import com.lexease.stories.Story;
 import com.lexease.stories.StoryStatus;
 import com.lexease.stories.TtsStatus;

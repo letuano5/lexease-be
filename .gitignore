@@ -1,6 +1,6 @@
 .agents/
 skills-lock.json
-.notes/
+# .notes/
 
 .gradle/
 build/

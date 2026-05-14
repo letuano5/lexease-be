@@ -1,6 +1,6 @@
-package com.lexease.stories.dtos.res;
+package com.lexease.genres.dtos.res;
 
-import com.lexease.stories.Genre;
+import com.lexease.genres.Genre;
 import java.util.UUID;
 
 public record GenreResponse(UUID id, String name) {

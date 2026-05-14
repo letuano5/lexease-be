@@ -3,9 +3,13 @@ package com.lexease.stories;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.lexease.authors.Author;
+import com.lexease.authors.AuthorRepository;
 import com.lexease.guardians.GuardianChildLink;
 import com.lexease.guardians.GuardianChildLinkRepository;
 import com.lexease.guardians.GuardianChildLinkStatus;
+import com.lexease.genres.Genre;
+import com.lexease.genres.GenreRepository;
 import com.lexease.shared.api.ApiException;
 import com.lexease.shared.api.PageResponse;
 import com.lexease.stories.dtos.req.StoryAccessChangeRequest;
@@ -151,12 +155,12 @@ class StoryServiceTests {
 
     private Genre saveGenre(String name) {
         StoryTextProcessor processor = new StoryTextProcessor();
-        return genreRepository.save(new Genre(UUID.randomUUID(), name, processor.normalizeForSearch(name), NOW));
+        return genreRepository.save(new Genre(UUID.randomUUID(), name, processor.normalizeForSearch(name), NOW, NOW));
     }
 
     private Author saveAuthor(String name) {
         StoryTextProcessor processor = new StoryTextProcessor();
-        return authorRepository.save(new Author(UUID.randomUUID(), name, processor.normalizeForSearch(name), NOW));
+        return authorRepository.save(new Author(UUID.randomUUID(), name, processor.normalizeForSearch(name), NOW, NOW));
     }
 
     private void saveAcceptedLink(UserAccount guardian, UserAccount child) {

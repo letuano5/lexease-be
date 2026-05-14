@@ -1,6 +1,6 @@
-package com.lexease.stories.dtos.res;
+package com.lexease.authors.dtos.res;
 
-import com.lexease.stories.Author;
+import com.lexease.authors.Author;
 import java.util.UUID;
 
 public record AuthorResponse(UUID id, String name) {

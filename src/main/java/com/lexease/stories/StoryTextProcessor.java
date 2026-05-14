@@ -1,24 +1,18 @@
 package com.lexease.stories;
 
-import java.text.Normalizer;
+import com.lexease.shared.text.TextNormalizer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StoryTextProcessor {
-    private static final Pattern MULTIPLE_SPACES = Pattern.compile("\\s+");
     private static final Pattern WORD_PATTERN = Pattern.compile("[\\p{L}\\p{M}\\p{N}]+");
 
     public String normalizeForSearch(String value) {
-        String decomposed = Normalizer.normalize(value.trim(), Normalizer.Form.NFD)
-                .replace('đ', 'd')
-                .replace('Đ', 'D')
-                .replaceAll("\\p{M}", "");
-        return MULTIPLE_SPACES.matcher(decomposed.toLowerCase(Locale.ROOT)).replaceAll(" ").trim();
+        return TextNormalizer.normalizeForSearch(value);
     }
 
     public List<ProcessedWord> splitWords(String content) {

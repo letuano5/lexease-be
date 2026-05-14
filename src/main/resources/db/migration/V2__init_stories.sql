@@ -2,14 +2,18 @@ create table genres (
     id uuid primary key,
     name text not null,
     normalized_name text not null unique,
-    created_at timestamptz not null
+    created_at timestamptz not null,
+    updated_at timestamptz not null,
+    deleted_at timestamptz null
 );
 
 create table authors (
     id uuid primary key,
     name text not null,
     normalized_name text not null unique,
-    created_at timestamptz not null
+    created_at timestamptz not null,
+    updated_at timestamptz not null,
+    deleted_at timestamptz null
 );
 
 create table stories (
