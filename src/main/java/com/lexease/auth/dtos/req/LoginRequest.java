@@ -1,4 +1,4 @@
-package com.lexease.auth;
+package com.lexease.auth.dtos.req;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

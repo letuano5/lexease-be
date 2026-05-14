@@ -1,9 +1,14 @@
 package com.lexease.auth;
 
+import com.lexease.auth.dtos.req.LoginRequest;
+import com.lexease.auth.dtos.req.LogoutRequest;
+import com.lexease.auth.dtos.req.RefreshRequest;
+import com.lexease.auth.dtos.req.RegisterRequest;
+import com.lexease.auth.dtos.res.AuthResponse;
 import com.lexease.shared.security.UserPrincipal;
 import com.lexease.users.UserAccount;
 import com.lexease.users.UserRepository;
-import com.lexease.users.UserResponse;
+import com.lexease.users.dtos.res.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -1,5 +1,8 @@
-package com.lexease.users;
+package com.lexease.users.dtos.res;
 
+import com.lexease.users.UserAccount;
+import com.lexease.users.UserRole;
+import com.lexease.users.UserStatus;
 import java.util.UUID;
 
 public record UserResponse(

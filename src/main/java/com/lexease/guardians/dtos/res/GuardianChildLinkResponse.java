@@ -1,5 +1,7 @@
-package com.lexease.guardians;
+package com.lexease.guardians.dtos.res;
 
+import com.lexease.guardians.GuardianChildLink;
+import com.lexease.guardians.GuardianChildLinkStatus;
 import java.util.UUID;
 
 public record GuardianChildLinkResponse(

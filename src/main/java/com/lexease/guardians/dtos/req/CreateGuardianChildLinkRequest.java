@@ -1,4 +1,4 @@
-package com.lexease.guardians;
+package com.lexease.guardians.dtos.req;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

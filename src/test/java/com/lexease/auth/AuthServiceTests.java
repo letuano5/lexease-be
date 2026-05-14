@@ -6,6 +6,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.lexease.auth.dtos.req.LoginRequest;
+import com.lexease.auth.dtos.req.RegisterRequest;
 import com.lexease.shared.api.ApiException;
 import com.lexease.shared.audit.AuditService;
 import com.lexease.users.UserAccount;

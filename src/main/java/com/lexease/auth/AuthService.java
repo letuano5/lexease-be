@@ -1,5 +1,10 @@
 package com.lexease.auth;
 
+import com.lexease.auth.dtos.req.LoginRequest;
+import com.lexease.auth.dtos.req.LogoutRequest;
+import com.lexease.auth.dtos.req.RefreshRequest;
+import com.lexease.auth.dtos.req.RegisterRequest;
+import com.lexease.auth.dtos.res.AuthResponse;
 import com.lexease.shared.api.ApiException;
 import com.lexease.shared.api.ErrorCode;
 import com.lexease.shared.audit.AuditAction;
@@ -7,9 +12,9 @@ import com.lexease.shared.audit.AuditService;
 import com.lexease.shared.audit.AuditTargetType;
 import com.lexease.users.UserAccount;
 import com.lexease.users.UserRepository;
-import com.lexease.users.UserResponse;
 import com.lexease.users.UserRole;
 import com.lexease.users.UserStatus;
+import com.lexease.users.dtos.res.UserResponse;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Locale;

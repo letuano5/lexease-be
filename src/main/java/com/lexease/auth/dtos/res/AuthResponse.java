@@ -1,6 +1,6 @@
-package com.lexease.auth;
+package com.lexease.auth.dtos.res;
 
-import com.lexease.users.UserResponse;
+import com.lexease.users.dtos.res.UserResponse;
 
 public record AuthResponse(
         String accessToken,

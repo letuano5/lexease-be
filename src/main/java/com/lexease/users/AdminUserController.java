@@ -3,6 +3,8 @@ package com.lexease.users;
 import com.lexease.shared.api.ApiException;
 import com.lexease.shared.api.ErrorCode;
 import com.lexease.shared.api.PageResponse;
+import com.lexease.users.dtos.req.PatchUserStatusRequest;
+import com.lexease.users.dtos.res.UserResponse;
 import jakarta.validation.Valid;
 import java.time.Clock;
 import java.time.Instant;

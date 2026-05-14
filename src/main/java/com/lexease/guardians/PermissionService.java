@@ -40,4 +40,11 @@ public class PermissionService {
     public boolean canManageStory(UserRole currentRole) {
         return currentRole == UserRole.ADMIN;
     }
+
+    public boolean canManageDisplaySettings(UUID currentUserId, UserRole currentRole, UUID childId) {
+        if (currentRole == UserRole.CHILD) {
+            return currentUserId.equals(childId);
+        }
+        return canManageChild(currentUserId, currentRole, childId);
+    }
 }
