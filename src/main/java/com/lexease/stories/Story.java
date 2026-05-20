@@ -133,6 +133,12 @@ public class Story {
                 .toList();
     }
 
+    public List<StoryWord> getWords() {
+        return words.stream()
+                .sorted(Comparator.comparingInt(StoryWord::getWordIndex))
+                .toList();
+    }
+
     public void update(
             String title,
             String normalizedTitle,

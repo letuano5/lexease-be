@@ -54,4 +54,28 @@ public class StoryWord {
         this.startChar = startChar;
         this.endChar = endChar;
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public int getWordIndex() {
+        return wordIndex;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getNormalizedText() {
+        return normalizedText;
+    }
+
+    public int getStartChar() {
+        return startChar;
+    }
+
+    public int getEndChar() {
+        return endChar;
+    }
 }

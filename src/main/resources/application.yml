@@ -36,5 +36,21 @@ lexease:
       ttl: ${JWT_REFRESH_TOKEN_TTL:30d}
   object-storage:
     mode: ${OBJECT_STORAGE_MODE:local}
+    local-root: ${OBJECT_STORAGE_LOCAL_ROOT:build/lexease-storage}
+    public-base-url: ${OBJECT_STORAGE_PUBLIC_BASE_URL:}
+    signing-secret: ${OBJECT_STORAGE_SIGNING_SECRET:dev-only-storage-signing-secret}
+    read-url-ttl: ${OBJECT_STORAGE_READ_URL_TTL:15m}
+  tts:
+    base-url: ${TTS_BASE_URL:http://localhost:6543}
+    callback-base-url: ${TTS_CALLBACK_BASE_URL:http://localhost:8080}
+    callback-secret: ${TTS_CALLBACK_SECRET:dev-only-tts-callback-secret}
+    mode: ${TTS_MODE:ASYNC}
+    provider: ${TTS_PROVIDER:vieneu-tts}
+    default-voice: ${TTS_DEFAULT_VOICE:Binh}
+    audio-format: ${TTS_AUDIO_FORMAT:wav}
+    language: ${TTS_LANGUAGE:vi-VN}
+    callback-timestamp-tolerance: ${TTS_CALLBACK_TIMESTAMP_TOLERANCE:5m}
+    max-word-count-mismatch-ratio: ${TTS_MAX_WORD_COUNT_MISMATCH_RATIO:0.10}
+    auto-generate-on-publish: ${TTS_AUTO_GENERATE_ON_PUBLISH:true}
   gemini:
     api-key: ${GEMINI_API_KEY:}

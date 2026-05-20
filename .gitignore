@@ -1,7 +1,7 @@
 .agents/
 skills-lock.json
 # .notes/
-
+.idea/
 .gradle/
 build/
 out/

@@ -17,6 +17,7 @@ import com.lexease.stories.dtos.req.StoryUpsertRequest;
 import com.lexease.stories.dtos.res.StoryAccessResponse;
 import com.lexease.stories.dtos.res.StoryDetailResponse;
 import com.lexease.stories.dtos.res.StorySummaryResponse;
+import com.lexease.tts.TtsService;
 import com.lexease.users.UserAccount;
 import com.lexease.users.UserRepository;
 import com.lexease.users.UserRole;
@@ -44,6 +45,7 @@ public class StoryService {
     private final PermissionService permissionService;
     private final StoryTextProcessor storyTextProcessor;
     private final AuditService auditService;
+    private final TtsService ttsService;
     private final Clock clock;
 
     public StoryService(
@@ -55,6 +57,7 @@ public class StoryService {
             PermissionService permissionService,
             StoryTextProcessor storyTextProcessor,
             AuditService auditService,
+            TtsService ttsService,
             Clock clock
     ) {
         this.storyRepository = storyRepository;
@@ -65,6 +68,7 @@ public class StoryService {
         this.permissionService = permissionService;
         this.storyTextProcessor = storyTextProcessor;
         this.auditService = auditService;
+        this.ttsService = ttsService;
         this.clock = clock;
     }
 
@@ -86,6 +90,7 @@ public class StoryService {
                 now);
         replaceMetadataAndText(story, request, content);
         story = storyRepository.save(story);
+        ttsService.enqueueDefaultAssetForPublishedStory(story);
         auditService.log(adminId, AuditAction.STORY_CREATED, AuditTargetType.STORY, story.getId());
         return StoryDetailResponse.from(story);
     }
@@ -103,7 +108,9 @@ public class StoryService {
                 Instant.now(clock));
         replaceMetadataAndText(story, request, content);
         auditService.log(adminId, AuditAction.STORY_UPDATED, AuditTargetType.STORY, story.getId());
-        return StoryDetailResponse.from(storyRepository.save(story));
+        Story saved = storyRepository.save(story);
+        ttsService.enqueueDefaultAssetForPublishedStory(saved);
+        return StoryDetailResponse.from(saved);
     }
 
     @Transactional

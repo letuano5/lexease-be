@@ -16,3 +16,10 @@ lexease:
       access-secret: test-only-access-secret-at-least-32-bytes
     refresh-token:
       pepper: test-only-refresh-pepper
+  object-storage:
+    local-root: build/test-lexease-storage
+    signing-secret: test-storage-signing-secret
+  tts:
+    callback-base-url: http://localhost:8080
+    callback-secret: test-tts-callback-secret
+    auto-generate-on-publish: false
