@@ -7,6 +7,8 @@ build/
 out/
 *.class
 
+application-local.yml
+
 .env
 *.log
 

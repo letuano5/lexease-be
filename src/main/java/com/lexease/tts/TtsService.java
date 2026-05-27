@@ -146,7 +146,7 @@ public class TtsService {
                     callback.language(),
                     callback.audio(),
                     callback.words(),
-                    null));
+                    callback.metadata()));
         } catch (ApiException ex) {
             asset.markFailed(ex.getMessage(), Instant.now(clock));
             throw ex;

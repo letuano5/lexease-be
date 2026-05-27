@@ -43,7 +43,7 @@ lexease:
   tts:
     base-url: ${TTS_BASE_URL:http://localhost:6543}
     callback-base-url: ${TTS_CALLBACK_BASE_URL:http://localhost:8080}
-    callback-secret: ${TTS_CALLBACK_SECRET:dev-only-tts-callback-secret}
+    callback-secret: ${TTS_CALLBACK_SECRET:0f5IIhREE2uxPl6l5UaQWUzB3CJiuvdToP2+85zja0M=}
     mode: ${TTS_MODE:ASYNC}
     provider: ${TTS_PROVIDER:vieneu-tts}
     default-voice: ${TTS_DEFAULT_VOICE:Binh}

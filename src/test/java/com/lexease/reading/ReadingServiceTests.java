@@ -188,7 +188,8 @@ class ReadingServiceTests {
                 List.of(
                         new TtsProviderWord(0, "Ngày", "ngay", 0, 300),
                         new TtsProviderWord(1, "xưa", "xua", 300, 600)),
-                null));
+                null,
+                Map.of("model", "vieneu-tts")));
 
         ReadingSessionResponse response = readingService.start(child.getId(), UserRole.CHILD, new StartReadingSessionRequest(
                 story.getId(),

@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lexease.shared.api.ApiException;
 import com.lexease.stories.Story;
 import com.lexease.stories.StoryRepository;
@@ -54,9 +55,51 @@ class TtsServiceTests {
     private StoryRepository storyRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private TtsProviderClient providerClient;
+
+    @Test
+    void callbackRequestAllowsMetadataAndFutureFields() throws Exception {
+        String body = """
+                {
+                  "jobId": "job-001",
+                  "status": "READY",
+                  "requestId": "asset-001",
+                  "voice": "Binh",
+                  "language": "vi-VN",
+                  "audio": {
+                    "mimeType": "audio/wav",
+                    "format": "wav",
+                    "sampleRateHz": 24000,
+                    "durationMs": 1000,
+                    "contentBase64": "YXVkaW8="
+                  },
+                  "words": [
+                    {
+                      "index": 0,
+                      "text": "Ngay",
+                      "normalizedText": "ngay",
+                      "startMs": 0,
+                      "endMs": 300
+                    }
+                  ],
+                  "metadata": {
+                    "model": "vieneu-tts",
+                    "alignmentMethod": "mfa",
+                    "createdAt": "2026-05-27T16:50:28.246562Z"
+                  },
+                  "futureField": "ignored"
+                }
+                """;
+
+        TtsCallbackRequest request = objectMapper.readValue(body, TtsCallbackRequest.class);
+
+        assertThat(request.metadata()).containsEntry("model", "vieneu-tts");
+        assertThat(request.words()).hasSize(1);
+    }
 
     @Test
     void asyncSubmitStoresProviderJobId() {
@@ -101,7 +144,8 @@ class TtsServiceTests {
                 List.of(
                         new TtsProviderWord(0, "Ngày", "ngay", 0, 300),
                         new TtsProviderWord(1, "xưa", "xua", 300, 600)),
-                null));
+                null,
+                Map.of("model", "vieneu-tts")));
 
         TtsAsset asset = ttsAssetRepository.findById(assetId).orElseThrow();
         assertThat(asset.getStatus()).isEqualTo(TtsStatus.READY);
@@ -126,7 +170,8 @@ class TtsServiceTests {
                 null,
                 null,
                 null,
-                new TtsProviderError("TTS_GENERATION_FAILED", "Could not synthesize audio", true, Map.of())));
+                new TtsProviderError("TTS_GENERATION_FAILED", "Could not synthesize audio", true, Map.of()),
+                null));
 
         TtsAsset asset = ttsAssetRepository.findById(assetId).orElseThrow();
         assertThat(asset.getStatus()).isEqualTo(TtsStatus.FAILED);
@@ -148,6 +193,7 @@ class TtsServiceTests {
                 "vi-VN",
                 new TtsAudio("audio/wav", "wav", 24000, 1000, Base64.getEncoder().encodeToString("audio".getBytes(StandardCharsets.UTF_8))),
                 List.of(new TtsProviderWord(0, "Ngày", "ngay", 400, 300)),
+                null,
                 null)))
                 .isInstanceOf(ApiException.class)
                 .hasMessage("TTS word timings are invalid");

@@ -4,6 +4,10 @@ spring:
     username: ${DB_USERNAME:lexease}
     password: ${DB_PASSWORD:lexease}
 
+lexease:
+  tts:
+    callback-secret: ${TTS_CALLBACK_SECRET:0f5IIhREE2uxPl6l5UaQWUzB3CJiuvdToP2+85zja0M=}
+
 logging:
   level:
     com.lexease: DEBUG
