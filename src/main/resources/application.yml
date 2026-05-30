@@ -25,6 +25,12 @@ management:
       exposure:
         include: health,info
 
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_API_DOCS_ENABLED:true}
+  swagger-ui:
+    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:true}
+
 lexease:
   security:
     jwt:
