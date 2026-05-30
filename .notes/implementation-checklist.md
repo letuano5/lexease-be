@@ -70,18 +70,18 @@ Use this as the single file to track done/not done.
 
 ## Phase 4 - Notifications
 
-- [ ] Create `device_tokens` migration.
-- [ ] Create `reminder_schedules` migration.
-- [ ] Create `notification_events` migration.
-- [ ] Implement device token register/deactivate.
-- [ ] Implement create/update/delete reminder.
-- [ ] Implement next-run calculation by timezone.
-- [ ] Implement scheduler scan due reminders.
-- [ ] Implement push sender interface.
-- [ ] Implement FCM/APNs provider choice.
-- [ ] Implement deep link payload.
-- [ ] Implement notification status tracking.
-- [ ] Implement ignored/late classification job.
+- [x] Create `device_tokens` migration.
+- [x] Create `reminder_schedules` migration.
+- [x] Create `notification_events` migration.
+- [x] Implement device token register/deactivate.
+- [x] Implement create/update/delete reminder.
+- [x] Implement next-run calculation by timezone.
+- [x] Implement scheduler scan due reminders.
+- [x] Implement push sender interface.
+- [x] Implement FCM/APNs provider choice.
+- [x] Implement deep link payload.
+- [x] Implement notification status tracking.
+- [x] Implement ignored/late classification job.
 
 ## Phase 5 - TTS And Reading
 

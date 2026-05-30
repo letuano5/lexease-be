@@ -56,11 +56,14 @@ Các điểm này chưa nên tự quyết khi implement chi tiết.
 
 10. iOS push dùng FCM bridge hay gọi APNs trực tiếp?
     - Android gần như vẫn dùng FCM.
+    - Decision: dùng Firebase Cloud Messaging cho MVP. iOS đi qua Firebase Messaging/APNs bridge, chưa gọi APNs trực tiếp.
 
 11. Thế nào là `OPENED_ON_TIME` và `OPENED_LATE`?
     - Ví dụ: on time nếu mở trong 15 phút sau scheduled time.
+    - Decision: backend tính `OPENED_ON_TIME` nếu mở trong `NOTIFICATIONS_OPENED_ON_TIME_WINDOW`, mặc định 15 phút sau `scheduled_for`; quá cửa sổ này là `OPENED_LATE`.
 
 12. Nếu nhiều thiết bị của cùng child, gửi push đến tất cả hay thiết bị active gần nhất?
+    - Decision: gửi đến tất cả active device tokens của child.
 
 ## TTS / MFA
 

@@ -68,3 +68,11 @@ lexease:
     prompt-version: ${SCORING_PROMPT_VERSION:reading-evaluation-v1}
     callback-base-url: ${SCORING_CALLBACK_BASE_URL:http://localhost:8080}
     recording-retention: ${SCORING_RECORDING_RETENTION:30d}
+  notifications:
+    firebase:
+      project-id: ${FIREBASE_PROJECT_ID:}
+      credentials-path: ${FIREBASE_CREDENTIALS_PATH:}
+    opened-on-time-window: ${NOTIFICATIONS_OPENED_ON_TIME_WINDOW:15m}
+    ignored-after: ${NOTIFICATIONS_IGNORED_AFTER:24h}
+    scheduler:
+      enabled: ${NOTIFICATIONS_SCHEDULER_ENABLED:true}
