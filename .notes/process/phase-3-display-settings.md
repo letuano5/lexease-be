@@ -11,6 +11,7 @@
 - Admin can read/update/reset any child settings.
 - Validation for font size, line height, letter spacing, hex colors, and basic `fontFamily`.
 - Audit actions for save/reset.
+- Highlight background/text color storage for per-word reading highlight.
 
 ## Data Model
 
@@ -24,6 +25,8 @@ Implemented table: `display_settings`.
 - `letter_spacing`: numeric letter spacing.
 - `background_color`: hex color.
 - `text_color`: hex color.
+- `highlight_background_color`: hex color for highlighted word background.
+- `highlight_text_color`: hex color for highlighted word text.
 - `theme_name`: optional theme key/name.
 - `settings_version`: monotonically increments on update/reset.
 - `created_at`, `updated_at`: audit timestamps.
@@ -47,6 +50,8 @@ Output:
   "letterSpacing": 0.04,
   "backgroundColor": "#FFFFFF",
   "textColor": "#111111",
+  "highlightBackgroundColor": "#FEF08A",
+  "highlightTextColor": "#111111",
   "themeName": "default",
   "settingsVersion": 1
 }
@@ -72,6 +77,8 @@ Input:
   "letterSpacing": 0.1,
   "backgroundColor": "#FFF7D6",
   "textColor": "#111827",
+  "highlightBackgroundColor": "#FDE68A",
+  "highlightTextColor": "#1F2937",
   "themeName": "warm-low-glare"
 }
 ```
@@ -84,6 +91,8 @@ Input fields:
 - `letterSpacing`: 0.00-0.50.
 - `backgroundColor`: required `#RRGGBB`.
 - `textColor`: required `#RRGGBB`.
+- `highlightBackgroundColor`: required `#RRGGBB`.
+- `highlightTextColor`: required `#RRGGBB`.
 - `themeName`: optional, max 80 chars.
 
 Output: same shape as get.

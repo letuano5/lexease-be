@@ -70,6 +70,8 @@ public class DisplaySettingsService {
                 request.letterSpacing(),
                 normalizeHex(request.backgroundColor()),
                 normalizeHex(request.textColor()),
+                normalizeHex(request.highlightBackgroundColor()),
+                normalizeHex(request.highlightTextColor()),
                 trimToNull(request.themeName()),
                 now,
                 existingSettings.isPresent());

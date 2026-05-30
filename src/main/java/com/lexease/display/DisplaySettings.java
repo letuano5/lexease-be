@@ -40,6 +40,12 @@ public class DisplaySettings {
     @Column(name = "text_color", nullable = false)
     private String textColor;
 
+    @Column(name = "highlight_background_color", nullable = false)
+    private String highlightBackgroundColor;
+
+    @Column(name = "highlight_text_color", nullable = false)
+    private String highlightTextColor;
+
     @Column(name = "theme_name")
     private String themeName;
 
@@ -102,6 +108,14 @@ public class DisplaySettings {
         return textColor;
     }
 
+    public String getHighlightBackgroundColor() {
+        return highlightBackgroundColor;
+    }
+
+    public String getHighlightTextColor() {
+        return highlightTextColor;
+    }
+
     public String getThemeName() {
         return themeName;
     }
@@ -117,6 +131,8 @@ public class DisplaySettings {
             BigDecimal letterSpacing,
             String backgroundColor,
             String textColor,
+            String highlightBackgroundColor,
+            String highlightTextColor,
             String themeName,
             Instant updatedAt,
             boolean incrementVersion
@@ -127,6 +143,8 @@ public class DisplaySettings {
         this.letterSpacing = letterSpacing;
         this.backgroundColor = backgroundColor;
         this.textColor = textColor;
+        this.highlightBackgroundColor = highlightBackgroundColor;
+        this.highlightTextColor = highlightTextColor;
         this.themeName = themeName;
         if (incrementVersion) {
             this.settingsVersion++;
@@ -147,6 +165,8 @@ public class DisplaySettings {
         this.letterSpacing = defaults.letterSpacing();
         this.backgroundColor = defaults.backgroundColor();
         this.textColor = defaults.textColor();
+        this.highlightBackgroundColor = defaults.highlightBackgroundColor();
+        this.highlightTextColor = defaults.highlightTextColor();
         this.themeName = defaults.themeName();
     }
 }

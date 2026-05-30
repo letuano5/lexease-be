@@ -18,6 +18,8 @@ public record SaveDisplaySettingsRequest(
         @NotNull @DecimalMin("0.00") @DecimalMax("0.50") @Digits(integer = 1, fraction = 2) BigDecimal letterSpacing,
         @NotBlank @Pattern(regexp = "^#[0-9A-Fa-f]{6}$") String backgroundColor,
         @NotBlank @Pattern(regexp = "^#[0-9A-Fa-f]{6}$") String textColor,
+        @NotBlank @Pattern(regexp = "^#[0-9A-Fa-f]{6}$") String highlightBackgroundColor,
+        @NotBlank @Pattern(regexp = "^#[0-9A-Fa-f]{6}$") String highlightTextColor,
         @Size(max = 80) String themeName
 ) {
 }

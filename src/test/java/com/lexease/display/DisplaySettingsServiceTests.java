@@ -47,6 +47,8 @@ class DisplaySettingsServiceTests {
 
         assertThat(response.childId()).isEqualTo(child.getId());
         assertThat(response.fontFamily()).isEqualTo("OpenDyslexic");
+        assertThat(response.highlightBackgroundColor()).isEqualTo("#FDE68A");
+        assertThat(response.highlightTextColor()).isEqualTo("#1F2937");
         assertThat(response.settingsVersion()).isEqualTo(1);
     }
 
@@ -77,6 +79,8 @@ class DisplaySettingsServiceTests {
                 child.getId());
 
         assertThat(response.fontFamily()).isEqualTo("system");
+        assertThat(response.highlightBackgroundColor()).isEqualTo("#FEF08A");
+        assertThat(response.highlightTextColor()).isEqualTo("#111111");
         assertThat(response.settingsVersion()).isEqualTo(2);
     }
 
@@ -88,6 +92,8 @@ class DisplaySettingsServiceTests {
                 new BigDecimal("0.10"),
                 "#fff7d6",
                 "#111827",
+                "#fde68a",
+                "#1f2937",
                 "warm-low-glare");
     }
 

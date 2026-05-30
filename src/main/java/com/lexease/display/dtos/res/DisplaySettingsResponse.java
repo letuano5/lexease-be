@@ -13,6 +13,8 @@ public record DisplaySettingsResponse(
         BigDecimal letterSpacing,
         String backgroundColor,
         String textColor,
+        String highlightBackgroundColor,
+        String highlightTextColor,
         String themeName,
         int settingsVersion
 ) {
@@ -25,6 +27,8 @@ public record DisplaySettingsResponse(
                 settings.getLetterSpacing(),
                 settings.getBackgroundColor(),
                 settings.getTextColor(),
+                settings.getHighlightBackgroundColor(),
+                settings.getHighlightTextColor(),
                 settings.getThemeName(),
                 settings.getSettingsVersion());
     }
@@ -38,6 +42,8 @@ public record DisplaySettingsResponse(
                 defaults.letterSpacing(),
                 defaults.backgroundColor(),
                 defaults.textColor(),
+                defaults.highlightBackgroundColor(),
+                defaults.highlightTextColor(),
                 defaults.themeName(),
                 1);
     }
