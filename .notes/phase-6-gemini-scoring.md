@@ -1,36 +1,96 @@
 # Phase 6 - Gemini Scoring And Progress Analytics
 
-Mục tiêu: child upload recording, backend gọi Gemini để đánh giá bài đọc, lưu transcript/score/errors/difficult words, rồi tổng hợp dashboard tiến độ.
+Mục tiêu: child đọc xong một đoạn/bài, bấm stop, gửi đoạn text đang đọc và một file thu âm duy nhất; Spring validate đoạn text thuộc story, lưu recording, gửi expected text + audio sang AI server, AI server gọi Gemini để chấm điểm, rồi Spring lưu kết quả và cung cấp dashboard tiến độ cho guardian.
+
+Decision đã chốt:
+
+- Frontend gửi một `voice` audio payload cho toàn bộ recording.
+- Frontend gửi `expectedText` là đoạn text child vừa đọc.
+- Spring validate `expectedText` thuộc story của reading session trước khi gửi đi chấm.
+- Spring backend lưu một audio object cho mỗi recording.
+- Scoring ưu tiên async qua AI server; có sync fallback bằng config.
+- Không code Gemini trực tiếp trong Spring.
+- Không làm `ai_model_configs` CRUD trong phase này; provider/model fix qua config/env tạm thời.
+- Không cần consent riêng trước khi gửi audio sang AI server/Gemini.
+- Retention mặc định 30 ngày hoặc guardian chủ động xoá.
+- Dashboard chính dành cho guardian theo dõi child.
 
 ## Input
 
-Create upload session:
+Create recording for a reading session:
+
+```http
+POST /sessions/{sessionId}/recordings
+```
 
 ```json
 {
+  "durationMs": 58200,
+  "expectedText": "Ngay xua co mot chu meo...",
+  "voice": {
+    "mimeType": "audio/webm",
+    "contentBase64": "..."
+  }
+}
+```
+
+Spring calls AI server async:
+
+```json
+{
+  "requestId": "evaluation-uuid",
+  "callbackUrl": "https://api.example.com/internal/scoring/evaluations/{evaluationId}/callback",
+  "childId": "uuid",
   "sessionId": "uuid",
-  "mimeType": "audio/webm",
-  "durationEstimateMs": 120000
+  "recordingId": "uuid",
+  "story": {
+    "id": "uuid",
+    "title": "Chu meo di hoc",
+    "expectedText": "Ngay xua co mot chu meo..."
+  },
+  "audio": {
+    "audioUrl": "signed-read-url",
+    "mimeType": "audio/webm",
+    "durationMs": 58200
+  },
+  "language": "vi-VN",
+  "provider": "gemini",
+  "model": "configured-model-name",
+  "promptVersion": "reading-evaluation-v1"
 }
 ```
 
-Complete upload:
+AI server callback:
 
-```json
-{
-  "recordingId": "uuid",
-  "durationMs": 118234,
-  "fileSize": 1839201
-}
+```http
+POST /internal/scoring/evaluations/{evaluationId}/callback
+X-Lexease-Timestamp: 1770000000
+X-Lexease-Signature: sha256=<hmac>
 ```
 
-Internal Gemini job:
-
 ```json
 {
-  "recordingId": "uuid",
-  "storyText": "Ngay xua co mot chu meo...",
-  "model": "configured-model-name"
+  "requestId": "evaluation-uuid",
+  "status": "DONE",
+  "heardText": "abc ...",
+  "summary": "Doc ro, con sai mot so am cuoi.",
+  "scores": {
+    "accuracy": 0.82,
+    "fluency": 0.74,
+    "pace": 0.69
+  },
+  "words": [
+    {
+      "wordIndex": 0,
+      "expected": "abc",
+      "heard": "abc",
+      "correct": true,
+      "confidence": 0.91,
+      "errorType": null
+    }
+  ],
+  "difficultWords": ["..."],
+  "error": null
 }
 ```
 
@@ -38,57 +98,6 @@ Progress summary:
 
 ```http
 GET /children/{childId}/progress/summary?range=month
-```
-
-## Output
-
-Upload session:
-
-```json
-{
-  "recordingId": "uuid",
-  "uploadUrl": "signed-upload-url",
-  "objectKey": "recordings/child/session/recording.webm"
-}
-```
-
-Evaluation result:
-
-```json
-{
-  "recordingId": "uuid",
-  "evaluationStatus": "DONE",
-  "summary": "Doc tuong doi ro, ngat nghi tot.",
-  "scores": {
-    "fluency": 0.82,
-    "accuracy": 0.76,
-    "pace": 0.68
-  },
-  "errors": [
-    {
-      "expected": "chu",
-      "heard": "chu",
-      "type": "pronunciation",
-      "confidence": 0.71
-    }
-  ],
-  "difficultWords": ["truong", "nghi"]
-}
-```
-
-Progress summary:
-
-```json
-{
-  "totalPracticeMinutes": 320,
-  "sessionsCount": 24,
-  "averageReadingSpeedWpm": 58,
-  "averageErrorsPerSession": 7.2,
-  "trend": {
-    "readingSpeed": "+12%",
-    "errors": "-18%"
-  }
-}
 ```
 
 ## Data Model
@@ -99,23 +108,14 @@ Progress summary:
 - `session_id uuid not null references reading_sessions(id)`
 - `child_id uuid not null references users(id)`
 - `story_id uuid not null references stories(id)`
-- `object_key text not null`
-- `duration_ms integer null`
-- `file_size bigint null`
-- `mime_type text not null`
-- `upload_status text not null check in ('PENDING','UPLOADED','FAILED')`
-- `created_at timestamptz not null`
-- `updated_at timestamptz not null`
-
-`ai_model_configs`
-
-- `id uuid primary key`
-- `task text not null`
-- `provider text not null`
-- `model_name text not null`
-- `enabled boolean not null default true`
-- `temperature numeric(3,2) null`
-- `response_schema jsonb null`
+- `status text not null check in ('READY','DELETED')`
+- `duration_ms bigint null`
+- `word_count integer not null`
+- `expected_text text not null`
+- `audio_object_key text not null`
+- `audio_mime_type text not null`
+- `expires_at timestamptz not null`
+- `deleted_at timestamptz null`
 - `created_at timestamptz not null`
 - `updated_at timestamptz not null`
 
@@ -126,124 +126,66 @@ Progress summary:
 - `provider text not null`
 - `model_name text not null`
 - `prompt_version text not null`
+- `provider_job_id text null`
 - `status text not null check in ('PENDING','PROCESSING','DONE','FAILED')`
-- `transcript text null`
+- `heard_text text null`
 - `summary text null`
-- `score_json jsonb null`
-- `errors_json jsonb null`
-- `difficult_words_json jsonb null`
-- `raw_response_object_key text null`
+- `scores jsonb not null default '{}'`
+- `word_results jsonb not null default '[]'`
+- `difficult_words jsonb not null default '[]'`
 - `error_message text null`
+- `deleted_at timestamptz null`
 - `created_at timestamptz not null`
 - `updated_at timestamptz not null`
 
-Optional aggregate table after raw events are stable:
-
-`child_daily_progress`
-
-- `child_id uuid not null`
-- `date date not null`
-- `practice_minutes integer not null`
-- `sessions_count integer not null`
-- `average_wpm numeric null`
-- `error_count integer not null`
-- `tts_help_count integer not null`
-- primary key `(child_id, date)`
-
-## Implementation
-
-### 6.1 Recording upload
-
-- Child creates upload session for own reading session.
-- Backend returns signed upload URL.
-- Frontend uploads directly to storage.
-- Frontend calls complete upload.
-- Backend marks recording `UPLOADED` and creates evaluation job.
-
-### 6.2 Gemini config
-
-Do not hard-code model id.
-
-Load active config by task:
-
-```text
-task = READING_EVALUATION
-provider = GEMINI
-model_name = from DB/env
-```
-
-Seed default via Flyway or app config, but allow changing without recompiling.
-
-### 6.3 Prompt and response schema
-
-Prompt should include:
-
-- Story text expected.
-- Child audio file.
-- Required JSON schema.
-- Scoring rubric for fluency/accuracy/pace.
-- Instruction to return uncertain results with low confidence.
-
-Store `prompt_version` so future prompt changes do not mix metrics silently.
-
-### 6.4 Evaluation job
-
-Flow:
-
-1. Load recording + reading session + story text.
-2. Upload/pass audio to Gemini according to file size.
-3. Ask Gemini for structured JSON.
-4. Validate JSON schema.
-5. Save transcript, summary, scores, errors, difficult words.
-6. Mark failed with retryable error if provider/network fails.
-
-Important: Gemini scoring should be treated as assistive feedback, not ground truth, until benchmarked with real recordings.
-
-### 6.5 Progress analytics
-
-Metrics from:
-
-- `reading_sessions.elapsed_ms`.
-- `reading_events` for TTS help count.
-- `ai_evaluations.errors_json`.
-- `ai_evaluations.difficult_words_json`.
-
-Endpoints:
-
-- summary by range.
-- timeseries by day/week/month.
-- difficult words.
-- session detail with recording playback URL and evaluation.
-
-### 6.6 Retention and privacy
-
-Recording is sensitive child data.
-
-Decision needed:
-
-- retention: 30/90/180 days or manual delete only.
-- whether guardian must consent before sending recording to Gemini.
-
-MVP should at least store `created_at` and make deletion possible later.
-
 ## APIs
 
-- `POST /recordings/upload-session`
-- `POST /recordings/{id}/complete-upload`
+Recording and evaluation:
+
+- `POST /sessions/{sessionId}/recordings`
 - `GET /recordings/{id}`
-- `GET /reading-sessions/{sessionId}`
+- `PATCH /recordings/{id}`
+- `DELETE /recordings/{id}`
+- `GET /recordings/{id}/evaluation`
+- `GET /evaluations/{id}`
+- `POST /evaluations/{id}/retry`
+- `DELETE /evaluations/{id}`
+- `POST /internal/scoring/evaluations/{evaluationId}/callback`
+
+Progress dashboard:
+
 - `GET /children/{childId}/progress/summary`
 - `GET /children/{childId}/progress/timeseries`
 - `GET /children/{childId}/progress/difficult-words`
-- Admin/internal retry: `POST /admin/evaluations/{id}/retry`
+- `GET /children/{childId}/progress/sessions`
+- `GET /children/{childId}/progress/sessions/{sessionId}`
+
+## Progress Metrics
+
+Dashboard summary should expose:
+
+- `totalPracticeMinutes`
+- `sessionsCount`
+- `completedSessionsCount`
+- `recordedSessionsCount`
+- `averageReadingSpeedWpm`
+- `averageAccuracy`
+- `averageFluency`
+- `averagePace`
+- `averageErrorsPerSession`
+- `ttsHelpCount`
+- trends versus previous range for practice time, reading speed, accuracy, and errors.
+
+Session detail should expose story, elapsed time, current/completed position, recordings, playback signed URLs, evaluation summary, expected/heard word results, and difficult words.
 
 ## Done Criteria
 
-- Child uploads recording for own session.
-- Guardian accepted child can view recording/evaluation.
-- Gemini model id is configurable.
-- Evaluation job persists structured result.
+- Child creates recording for own reading session with a single audio payload.
+- Recording audio is stored and returned through signed URLs.
+- Spring submits evaluation to AI server async and supports sync fallback by config.
+- AI callback persists heard text, summary, scores, word-level results, and difficult words.
 - Failed evaluation can be retried.
-- Progress summary/timeseries/difficult words work from stored sessions/events/evaluations.
-- Recording URL is signed and short-lived.
-
+- Child owner and accepted guardian can view recording/evaluation.
+- Guardian can soft-delete recordings.
+- Progress summary/timeseries/difficult words/session detail work from stored sessions/events/evaluations.
+- Recording retention is configurable and defaults to 30 days.

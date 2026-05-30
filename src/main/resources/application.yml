@@ -43,7 +43,7 @@ lexease:
   tts:
     base-url: ${TTS_BASE_URL:http://localhost:6543}
     callback-base-url: ${TTS_CALLBACK_BASE_URL:http://localhost:8080}
-    callback-secret: ${TTS_CALLBACK_SECRET:0f5IIhREE2uxPl6l5UaQWUzB3CJiuvdToP2+85zja0M=}
+    callback-secret: ${TTS_CALLBACK_SECRET:dev-secret-change-me}
     mode: ${TTS_MODE:ASYNC}
     provider: ${TTS_PROVIDER:vieneu-tts}
     default-voice: ${TTS_DEFAULT_VOICE:Binh}
@@ -54,3 +54,11 @@ lexease:
     auto-generate-on-publish: ${TTS_AUTO_GENERATE_ON_PUBLISH:true}
   gemini:
     api-key: ${GEMINI_API_KEY:}
+  scoring:
+    base-url: ${SCORING_BASE_URL:http://localhost:6543}
+    mode: ${SCORING_MODE:ASYNC}
+    provider: ${SCORING_PROVIDER:gemini}
+    model: ${SCORING_MODEL:gemini-configured-model}
+    prompt-version: ${SCORING_PROMPT_VERSION:reading-evaluation-v1}
+    callback-base-url: ${SCORING_CALLBACK_BASE_URL:http://localhost:8080}
+    recording-retention: ${SCORING_RECORDING_RETENTION:30d}

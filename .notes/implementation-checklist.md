@@ -105,28 +105,29 @@ Use this as the single file to track done/not done.
 
 ## Phase 6 - Gemini Scoring
 
-- [ ] Create `recordings` migration.
-- [ ] Create `ai_model_configs` migration.
-- [ ] Create `ai_evaluations` migration.
-- [ ] Implement upload session.
-- [ ] Implement complete upload.
-- [ ] Implement evaluation job creation.
-- [ ] Implement Gemini client.
-- [ ] Make Gemini model configurable.
-- [ ] Define prompt version and JSON schema.
-- [ ] Validate Gemini JSON response.
-- [ ] Persist transcript/summary/scores/errors/difficult words.
-- [ ] Implement retry failed evaluation.
-- [ ] Implement progress summary.
-- [ ] Implement progress timeseries.
-- [ ] Implement difficult words endpoint.
-- [ ] Implement session detail endpoint.
+- [x] Create `recordings` migration.
+- [x] Store one audio file per recording.
+- [ ] Create `ai_model_configs` migration. Deferred; model is fixed by config/env for MVP.
+- [x] Create `ai_evaluations` migration.
+- [x] Implement recording create with a single audio payload.
+- [x] Implement recording read/update/delete.
+- [x] Implement evaluation job creation.
+- [x] Implement AI server scoring client.
+- [x] Make scoring provider/model configurable by env.
+- [x] Define prompt version and AI server JSON contract.
+- [x] Persist heard text/summary/scores/word results/difficult words.
+- [x] Implement retry failed evaluation.
+- [x] Implement progress summary.
+- [x] Implement progress timeseries.
+- [x] Implement difficult words endpoint.
+- [x] Implement session detail endpoint.
+- [x] Add recording/evaluation/progress tests.
 
 ## Cross-Cutting
 
 - [ ] Add audit logs for sensitive actions.
 - [ ] Add rate limit for login/register.
 - [ ] Add signed URL expiry config.
-- [ ] Add retention config for recordings.
+- [x] Add retention config for recordings.
 - [ ] Add OpenAPI docs or generated API contract.
 - [ ] Add seed data for local dev.

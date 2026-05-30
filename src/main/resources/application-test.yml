@@ -23,3 +23,5 @@ lexease:
     callback-base-url: http://localhost:8080
     callback-secret: test-tts-callback-secret
     auto-generate-on-publish: false
+  scoring:
+    callback-base-url: http://localhost:8080

@@ -101,6 +101,18 @@ public class ReadingSession {
         return elapsedMs;
     }
 
+    public Instant getStartedAt() {
+        return startedAt;
+    }
+
+    public Instant getLastActiveAt() {
+        return lastActiveAt;
+    }
+
+    public Instant getCompletedAt() {
+        return completedAt;
+    }
+
     public void touch(Instant now) {
         this.lastActiveAt = now;
     }
