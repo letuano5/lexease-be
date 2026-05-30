@@ -37,7 +37,7 @@ lexease:
   object-storage:
     mode: ${OBJECT_STORAGE_MODE:local}
     local-root: ${OBJECT_STORAGE_LOCAL_ROOT:build/lexease-storage}
-    public-base-url: ${OBJECT_STORAGE_PUBLIC_BASE_URL:}
+    public-base-url: ${OBJECT_STORAGE_PUBLIC_BASE_URL:http://localhost:8080}
     signing-secret: ${OBJECT_STORAGE_SIGNING_SECRET:dev-only-storage-signing-secret}
     read-url-ttl: ${OBJECT_STORAGE_READ_URL_TTL:15m}
   tts:
@@ -58,7 +58,7 @@ lexease:
     base-url: ${SCORING_BASE_URL:http://localhost:6543}
     mode: ${SCORING_MODE:ASYNC}
     provider: ${SCORING_PROVIDER:gemini}
-    model: ${SCORING_MODEL:gemini-configured-model}
+    model: ${SCORING_MODEL:gemini-3.1-flash-lite}
     prompt-version: ${SCORING_PROMPT_VERSION:reading-evaluation-v1}
     callback-base-url: ${SCORING_CALLBACK_BASE_URL:http://localhost:8080}
     recording-retention: ${SCORING_RECORDING_RETENTION:30d}
