@@ -2,6 +2,7 @@ package com.lexease.guardians;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GuardianChildLinkRepository extends JpaRepository<GuardianChildLink, UUID> {
@@ -11,5 +12,6 @@ public interface GuardianChildLinkRepository extends JpaRepository<GuardianChild
 
     boolean existsByChildIdAndStatus(UUID childId, GuardianChildLinkStatus status);
 
+    @EntityGraph(attributePaths = {"guardian", "child"})
     List<GuardianChildLink> findByGuardianIdOrChildId(UUID guardianId, UUID childId);
 }
