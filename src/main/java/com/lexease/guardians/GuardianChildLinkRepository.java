@@ -13,5 +13,14 @@ public interface GuardianChildLinkRepository extends JpaRepository<GuardianChild
     boolean existsByChildIdAndStatus(UUID childId, GuardianChildLinkStatus status);
 
     @EntityGraph(attributePaths = {"guardian", "child"})
+    List<GuardianChildLink> findByGuardianIdAndStatusOrderByCreatedAtDesc(
+            UUID guardianId,
+            GuardianChildLinkStatus status
+    );
+
+    @EntityGraph(attributePaths = {"guardian", "child"})
+    List<GuardianChildLink> findByChildIdOrderByCreatedAtDesc(UUID childId);
+
+    @EntityGraph(attributePaths = {"guardian", "child"})
     List<GuardianChildLink> findByGuardianIdOrChildId(UUID guardianId, UUID childId);
 }

@@ -12,6 +12,7 @@ import com.lexease.genres.Genre;
 import com.lexease.genres.GenreRepository;
 import com.lexease.shared.api.ApiException;
 import com.lexease.shared.api.PageResponse;
+import com.lexease.stories.dtos.req.PatchStoryRequest;
 import com.lexease.stories.dtos.req.StoryAccessChangeRequest;
 import com.lexease.stories.dtos.req.StoryUpsertRequest;
 import com.lexease.stories.dtos.res.StoryDetailResponse;
@@ -139,6 +140,33 @@ class StoryServiceTests {
                 null)))
                 .isInstanceOf(ApiException.class)
                 .hasMessage("Cannot block story for child");
+    }
+
+    @Test
+    void patchStoryUpdatesOnlyProvidedFields() {
+        UserAccount admin = saveUser(UserRole.ADMIN, "admin4@example.com");
+        Genre oldGenre = saveGenre("Thiếu nhi");
+        Genre newGenre = saveGenre("Phiêu lưu");
+        Author author = saveAuthor("Nguyễn A");
+        StoryDetailResponse created = storyService.create(admin.getId(), new StoryUpsertRequest(
+                "Câu chuyện cũ",
+                "Nội dung vẫn giữ nguyên.",
+                List.of(oldGenre.getId()),
+                List.of(author.getId()),
+                StoryStatus.PUBLISHED));
+
+        StoryDetailResponse updated = storyService.update(admin.getId(), created.id(), new PatchStoryRequest(
+                null,
+                null,
+                List.of(newGenre.getId()),
+                null,
+                null));
+
+        assertThat(updated.title()).isEqualTo("Câu chuyện cũ");
+        assertThat(updated.content()).isEqualTo("Nội dung vẫn giữ nguyên.");
+        assertThat(updated.status()).isEqualTo(StoryStatus.PUBLISHED);
+        assertThat(updated.authors()).extracting("id").containsExactly(author.getId());
+        assertThat(updated.genres()).extracting("id").containsExactly(newGenre.getId());
     }
 
     private UserAccount saveUser(UserRole role, String email) {

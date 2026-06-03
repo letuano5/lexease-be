@@ -1,5 +1,6 @@
 package com.lexease.stories;
 
+import com.lexease.stories.dtos.req.PatchStoryRequest;
 import com.lexease.stories.dtos.req.StoryUpsertRequest;
 import com.lexease.stories.dtos.res.StoryDetailResponse;
 import com.lexease.shared.security.UserPrincipal;
@@ -40,7 +41,7 @@ public class AdminStoryController {
     StoryDetailResponse update(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable UUID id,
-            @Valid @RequestBody StoryUpsertRequest request
+            @Valid @RequestBody PatchStoryRequest request
     ) {
         return storyService.update(principal.id(), id, request);
     }

@@ -12,6 +12,7 @@ import com.lexease.shared.api.PageResponse;
 import com.lexease.shared.audit.AuditAction;
 import com.lexease.shared.audit.AuditService;
 import com.lexease.shared.audit.AuditTargetType;
+import com.lexease.stories.dtos.req.PatchStoryRequest;
 import com.lexease.stories.dtos.req.StoryAccessChangeRequest;
 import com.lexease.stories.dtos.req.StoryUpsertRequest;
 import com.lexease.stories.dtos.res.StoryAccessResponse;
@@ -96,17 +97,26 @@ public class StoryService {
     }
 
     @Transactional
-    public StoryDetailResponse update(UUID adminId, UUID storyId, StoryUpsertRequest request) {
+    public StoryDetailResponse update(UUID adminId, UUID storyId, PatchStoryRequest request) {
         Story story = findStory(storyId);
-        String title = request.title().trim();
-        String content = request.content().trim();
+        String title = request.title() == null ? story.getTitle() : request.title().trim();
+        String content = request.content() == null ? story.getContent() : request.content().trim();
+        StoryStatus status = request.status() == null ? story.getStatus() : request.status();
         story.update(
                 title,
                 storyTextProcessor.normalizeForSearch(title),
                 content,
-                request.status(),
+                status,
                 Instant.now(clock));
-        replaceMetadataAndText(story, request, content);
+        if (request.genreIds() != null) {
+            story.replaceGenres(loadGenres(request.genreIds()));
+        }
+        if (request.authorIds() != null) {
+            story.replaceAuthors(loadAuthors(request.authorIds()));
+        }
+        if (request.content() != null) {
+            replaceWords(story, content);
+        }
         auditService.log(adminId, AuditAction.STORY_UPDATED, AuditTargetType.STORY, story.getId());
         Story saved = storyRepository.save(story);
         ttsService.enqueueDefaultAssetForPublishedStory(saved);
@@ -249,6 +259,10 @@ public class StoryService {
     private void replaceMetadataAndText(Story story, StoryUpsertRequest request, String content) {
         story.replaceGenres(loadGenres(request.genreIds()));
         story.replaceAuthors(loadAuthors(request.authorIds()));
+        replaceWords(story, content);
+    }
+
+    private void replaceWords(Story story, String content) {
         story.replaceWords(storyTextProcessor.splitWords(content).stream()
                 .map(word -> new StoryWord(
                         UUID.randomUUID(),

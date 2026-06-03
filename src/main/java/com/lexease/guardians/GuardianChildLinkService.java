@@ -72,7 +72,14 @@ public class GuardianChildLinkService {
 
     @Transactional(readOnly = true)
     public List<GuardianChildLinkResponse> list(UserPrincipal principal) {
-        return linkRepository.findByGuardianIdOrChildId(principal.id(), principal.id()).stream()
+        List<GuardianChildLink> links = switch (principal.role()) {
+            case GUARDIAN -> linkRepository.findByGuardianIdAndStatusOrderByCreatedAtDesc(
+                    principal.id(),
+                    GuardianChildLinkStatus.ACCEPTED);
+            case CHILD -> linkRepository.findByChildIdOrderByCreatedAtDesc(principal.id());
+            case ADMIN -> linkRepository.findByGuardianIdOrChildId(principal.id(), principal.id());
+        };
+        return links.stream()
                 .map(GuardianChildLinkResponse::from)
                 .toList();
     }
