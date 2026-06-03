@@ -120,6 +120,102 @@ class StoryServiceTests {
     }
 
     @Test
+    void guardianSearchShowsBlockedStoryForManagedChild() {
+        UserAccount admin = saveUser(UserRole.ADMIN, "admin2b@example.com");
+        UserAccount guardian = saveUser(UserRole.GUARDIAN, "guardian-b@example.com");
+        UserAccount child = saveUser(UserRole.CHILD, "child2b@example.com");
+        Genre genre = saveGenre("Thiếu nhi B");
+        Author author = saveAuthor("Nguyễn B");
+        saveAcceptedLink(guardian, child);
+        StoryDetailResponse story = storyService.create(admin.getId(), new StoryUpsertRequest(
+                "Câu chuyện phụ huynh vẫn thấy",
+                "Nội dung truyện.",
+                List.of(genre.getId()),
+                List.of(author.getId()),
+                StoryStatus.PUBLISHED));
+
+        storyService.block(guardian.getId(), UserRole.GUARDIAN, new StoryAccessChangeRequest(
+                child.getId(),
+                story.id(),
+                true,
+                "Không phù hợp"));
+
+        PageResponse<StorySummaryResponse> response = storyService.search(
+                guardian.getId(),
+                UserRole.GUARDIAN,
+                null,
+                List.of(),
+                List.of(),
+                child.getId(),
+                0,
+                20);
+
+        assertThat(response.items())
+                .extracting(StorySummaryResponse::id)
+                .contains(story.id());
+        assertThat(response.items())
+                .filteredOn(item -> item.id().equals(story.id()))
+                .extracting(StorySummaryResponse::isBlockedForCurrentChild)
+                .containsExactly(true);
+    }
+
+    @Test
+    void guardianCanGetBlockedStoryForManagedChild() {
+        UserAccount admin = saveUser(UserRole.ADMIN, "admin2c@example.com");
+        UserAccount guardian = saveUser(UserRole.GUARDIAN, "guardian-c@example.com");
+        UserAccount child = saveUser(UserRole.CHILD, "child2c@example.com");
+        Genre genre = saveGenre("Thiếu nhi C");
+        Author author = saveAuthor("Nguyễn C");
+        saveAcceptedLink(guardian, child);
+        StoryDetailResponse story = storyService.create(admin.getId(), new StoryUpsertRequest(
+                "Câu chuyện xem log",
+                "Nội dung truyện.",
+                List.of(genre.getId()),
+                List.of(author.getId()),
+                StoryStatus.PUBLISHED));
+
+        storyService.block(guardian.getId(), UserRole.GUARDIAN, new StoryAccessChangeRequest(
+                child.getId(),
+                story.id(),
+                true,
+                "Không phù hợp"));
+
+        StoryDetailResponse response = storyService.get(
+                guardian.getId(),
+                UserRole.GUARDIAN,
+                story.id(),
+                child.getId());
+
+        assertThat(response.id()).isEqualTo(story.id());
+    }
+
+    @Test
+    void childCannotGetStoryBlockedByAcceptedGuardian() {
+        UserAccount admin = saveUser(UserRole.ADMIN, "admin2d@example.com");
+        UserAccount guardian = saveUser(UserRole.GUARDIAN, "guardian-d@example.com");
+        UserAccount child = saveUser(UserRole.CHILD, "child2d@example.com");
+        Genre genre = saveGenre("Thiếu nhi D");
+        Author author = saveAuthor("Nguyễn D");
+        saveAcceptedLink(guardian, child);
+        StoryDetailResponse story = storyService.create(admin.getId(), new StoryUpsertRequest(
+                "Câu chuyện child không thấy",
+                "Nội dung truyện.",
+                List.of(genre.getId()),
+                List.of(author.getId()),
+                StoryStatus.PUBLISHED));
+
+        storyService.block(guardian.getId(), UserRole.GUARDIAN, new StoryAccessChangeRequest(
+                child.getId(),
+                story.id(),
+                true,
+                "Không phù hợp"));
+
+        assertThatThrownBy(() -> storyService.get(child.getId(), UserRole.CHILD, story.id(), child.getId()))
+                .isInstanceOf(ApiException.class)
+                .hasMessage("Story not found");
+    }
+
+    @Test
     void guardianCannotBlockUnacceptedChild() {
         UserAccount admin = saveUser(UserRole.ADMIN, "admin3@example.com");
         UserAccount guardian = saveUser(UserRole.GUARDIAN, "guardian2@example.com");

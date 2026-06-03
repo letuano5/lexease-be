@@ -148,12 +148,13 @@ public class StoryService {
                 Math.max(page, 0),
                 Math.min(Math.max(size, 1), MAX_PAGE_SIZE),
                 Sort.by(Sort.Direction.DESC, "updatedAt"));
+        UUID blockedVisibilityChildId = currentRole == UserRole.CHILD ? effectiveChildId : null;
         Page<Story> storyPage = storyRepository.findAll(StorySpecifications.search(
                 keyword == null ? null : storyTextProcessor.normalizeForSearch(keyword),
                 distinctIds(genreIds),
                 distinctIds(authorIds),
                 publishedOnly,
-                effectiveChildId), pageRequest);
+                blockedVisibilityChildId), pageRequest);
         return PageResponse.from(storyPage.map(story -> StorySummaryResponse.from(
                 story,
                 effectiveChildId != null && storyAccessBlockRepository.existsAcceptedActiveBlock(
@@ -169,7 +170,9 @@ public class StoryService {
         if (currentRole != UserRole.ADMIN && story.getStatus() != StoryStatus.PUBLISHED) {
             throw new ApiException(HttpStatus.NOT_FOUND, ErrorCode.STORY_NOT_FOUND, "Story not found");
         }
-        if (effectiveChildId != null && storyAccessBlockRepository.existsAcceptedActiveBlock(
+        if (currentRole == UserRole.CHILD
+                && effectiveChildId != null
+                && storyAccessBlockRepository.existsAcceptedActiveBlock(
                 effectiveChildId,
                 story.getId(),
                 GuardianChildLinkStatus.ACCEPTED)) {
